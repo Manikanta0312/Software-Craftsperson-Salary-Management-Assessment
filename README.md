@@ -1,3 +1,7 @@
+## Live Demo
+- **Video Demo**: https://www.loom.com/share/ca8f3ebfb4c44c2b80a0a9cfcb0567a2
+- **GitHub**: https://github.com/Manikanta0312/Software-Craftsperson-Salary-Management-Assessment
+
 # SalaryHQ — Salary Management Tool
 
 HR salary management platform for 10,000+ employees. Built with FastAPI, React, and SQLite.
