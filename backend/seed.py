@@ -6,6 +6,8 @@ Target: < 3 seconds for 10,000 rows.
 import random
 import time
 import sqlite3
+import sys
+import os
 from pathlib import Path
 from datetime import date, timedelta
 
@@ -75,8 +77,15 @@ def salary_for_title(title: str) -> float:
 
 
 def main():
-    first_names = (NAMES_DIR / "first_names.txt").read_text().splitlines()
-    last_names  = (NAMES_DIR / "last_names.txt").read_text().splitlines()
+    # Create tables first (safe to call multiple times)
+    sys.path.insert(0, str(Path(__file__).parent))
+    from app.database import Base, engine
+    Base.metadata.create_all(bind=engine)
+
+    # Resolve name files — check both parent and current dir
+    names_dir = NAMES_DIR if (NAMES_DIR / "first_names.txt").exists() else Path(__file__).parent
+    first_names = (names_dir / "first_names.txt").read_text().splitlines()
+    last_names  = (names_dir / "last_names.txt").read_text().splitlines()
 
     print(f"Seeding 10,000 employees from {len(first_names)} × {len(last_names)} names…")
     t0 = time.perf_counter()
@@ -99,7 +108,6 @@ def main():
     conn.execute("PRAGMA journal_mode=WAL")
     conn.execute("PRAGMA synchronous=NORMAL")
 
-    # Idempotent truncate
     conn.execute("DELETE FROM salary_history")
     conn.execute("DELETE FROM employees")
 
